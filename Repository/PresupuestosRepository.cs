@@ -1,7 +1,7 @@
 using Microsoft.Data.Sqlite;
-using Tp7.Models;
+using Tp8.Models;
 
-namespace Tp7.Repository
+namespace Tp8.Repository
 {
     public class PresupuestosRepository
     {
@@ -33,30 +33,62 @@ namespace Tp7.Repository
 
         // 🔹 Listar todos los presupuestos
         public List<Presupuestos> ListarPresupuestos()
+{
+    List<Presupuestos> lista = new List<Presupuestos>();
+
+    using var conexion = new SqliteConnection(cadenaConexion);
+    conexion.Open();
+
+    // Traemos todos los presupuestos
+    string sql = "SELECT idPresupuesto, nombreDestinatario, FechaCreacion FROM Presupuestos";
+    using var comando = new SqliteCommand(sql, conexion);
+    using var lector = comando.ExecuteReader();
+
+    while (lector.Read())
+    {
+        var p = new Presupuestos
         {
-            List<Presupuestos> lista = new List<Presupuestos>();
+            idPresupuesto = Convert.ToInt32(lector["idPresupuesto"]),
+            nombreDestinatario = lector["nombreDestinatario"].ToString(),
+            FechaCreacion = DateTime.Parse(lector["FechaCreacion"].ToString()),
+            Detalle = new List<PresupuestosDetalle>() // 👈 agregamos esto
+        };
 
-            using var conexion = new SqliteConnection(cadenaConexion);
-            conexion.Open();
+        // 🔹 Ahora traemos los detalles de este presupuesto
+        string sqlDetalle = @"
+            SELECT d.idProducto, d.cantidad, pr.descripcion, pr.precio
+            FROM PresupuestoDetalles d
+            JOIN Productos pr ON d.idProducto = pr.idProducto
+            WHERE d.idPresupuesto = @idPresupuesto";
 
-            string sql = "SELECT idPresupuesto, nombreDestinatario, FechaCreacion FROM Presupuestos";
-            using var comando = new SqliteCommand(sql, conexion);
-            using var lector = comando.ExecuteReader();
+        using var cmdDetalle = new SqliteCommand(sqlDetalle, conexion);
+        cmdDetalle.Parameters.AddWithValue("@idPresupuesto", p.idPresupuesto);
 
-            while (lector.Read())
+        using var lectorDetalle = cmdDetalle.ExecuteReader();
+        while (lectorDetalle.Read())
+        {
+            var producto = new Productos
             {
-                var p = new Presupuestos
-                {
-                    idPresupuesto = Convert.ToInt32(lector["idPresupuesto"]),
-                    nombreDestinatario = lector["nombreDestinatario"].ToString(),
-                    FechaCreacion = DateTime.Parse(lector["FechaCreacion"].ToString())
-                };
+                idProducto = Convert.ToInt32(lectorDetalle["idProducto"]),
+                descripcion = lectorDetalle["descripcion"].ToString(),
+                precio = Convert.ToInt32(lectorDetalle["precio"])
+            };
 
-                lista.Add(p);
-            }
+            var detalle = new PresupuestosDetalle
+            {
+                producto = producto,
+                cantidad = Convert.ToInt32(lectorDetalle["cantidad"])
+            };
 
-            return lista;
+            p.Detalle.Add(detalle);
         }
+
+        lista.Add(p);
+    }
+
+    return lista;
+}
+
 
         // 🔹 Obtener presupuesto por ID (con sus productos y cantidades)
         public Presupuestos? ObtenerPresupuestoPorId(int id)

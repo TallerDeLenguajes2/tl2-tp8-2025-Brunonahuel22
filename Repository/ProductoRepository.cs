@@ -1,7 +1,7 @@
-using Tp7.Models;
+using Tp8.Models;
 using Microsoft.Data.Sqlite;
 using SQLitePCL;
-namespace Tp7.Repository;
+namespace Tp8.Repository;
 
 
 
