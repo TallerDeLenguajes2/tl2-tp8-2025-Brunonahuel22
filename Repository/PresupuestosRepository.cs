@@ -29,65 +29,47 @@ namespace Tp8.Repository
 
             return p;
         }
-
-
-        // 🔹 Listar todos los presupuestos
-        public List<Presupuestos> ListarPresupuestos()
-{
-    List<Presupuestos> lista = new List<Presupuestos>();
-
-    using var conexion = new SqliteConnection(cadenaConexion);
-    conexion.Open();
-
-    // Traemos todos los presupuestos
-    string sql = "SELECT idPresupuesto, nombreDestinatario, FechaCreacion FROM Presupuestos";
-    using var comando = new SqliteCommand(sql, conexion);
-    using var lector = comando.ExecuteReader();
-
-    while (lector.Read())
-    {
-        var p = new Presupuestos
+        public void EditarPresupuesto(Presupuestos p)
         {
-            idPresupuesto = Convert.ToInt32(lector["idPresupuesto"]),
-            nombreDestinatario = lector["nombreDestinatario"].ToString(),
-            FechaCreacion = DateTime.Parse(lector["FechaCreacion"].ToString()),
-            Detalle = new List<PresupuestosDetalle>() // 👈 agregamos esto
-        };
+            using var conexion = new SqliteConnection(cadenaConexion);
+            conexion.Open();
 
-        // 🔹 Ahora traemos los detalles de este presupuesto
-        string sqlDetalle = @"
-            SELECT d.idProducto, d.cantidad, pr.descripcion, pr.precio
-            FROM PresupuestoDetalles d
-            JOIN Productos pr ON d.idProducto = pr.idProducto
-            WHERE d.idPresupuesto = @idPresupuesto";
+            string sql = "UPDATE Presupuestos SET nombreDestinatario=@nombre, FechaCreacion=@fecha WHERE idPresupuesto=@id";
+            using var comando = new SqliteCommand(sql, conexion);
+            comando.Parameters.AddWithValue("@nombre", p.nombreDestinatario);
+            comando.Parameters.AddWithValue("@fecha", p.FechaCreacion);
+            comando.Parameters.AddWithValue("@id", p.idPresupuesto);
 
-        using var cmdDetalle = new SqliteCommand(sqlDetalle, conexion);
-        cmdDetalle.Parameters.AddWithValue("@idPresupuesto", p.idPresupuesto);
-
-        using var lectorDetalle = cmdDetalle.ExecuteReader();
-        while (lectorDetalle.Read())
-        {
-            var producto = new Productos
-            {
-                idProducto = Convert.ToInt32(lectorDetalle["idProducto"]),
-                descripcion = lectorDetalle["descripcion"].ToString(),
-                precio = Convert.ToInt32(lectorDetalle["precio"])
-            };
-
-            var detalle = new PresupuestosDetalle
-            {
-                producto = producto,
-                cantidad = Convert.ToInt32(lectorDetalle["cantidad"])
-            };
-
-            p.Detalle.Add(detalle);
+            comando.ExecuteNonQuery();
         }
 
-        lista.Add(p);
-    }
 
-    return lista;
-}
+    
+        public List<Presupuestos> ListarPresupuestos()
+        {
+            List<Presupuestos> lista = new List<Presupuestos>();
+
+            using var conexion = new SqliteConnection(cadenaConexion);
+            conexion.Open();
+
+            // Traemos todos los presupuestos
+            string sql = "SELECT idPresupuesto, nombreDestinatario, FechaCreacion FROM Presupuestos";
+            using var comando = new SqliteCommand(sql, conexion);
+            using var lector = comando.ExecuteReader();
+
+            while (lector.Read())
+            {
+                var p = new Presupuestos
+                {
+                    idPresupuesto = Convert.ToInt32(lector["idPresupuesto"]),
+                    nombreDestinatario = lector["nombreDestinatario"].ToString(),
+                    FechaCreacion = DateTime.Parse(lector["FechaCreacion"].ToString()),
+                };
+                lista.Add(p);
+            }
+
+            return lista;
+        }
 
 
         // 🔹 Obtener presupuesto por ID (con sus productos y cantidades)
@@ -112,12 +94,45 @@ namespace Tp8.Repository
                 {
                     idPresupuesto = Convert.ToInt32(lectorPres["idPresupuesto"]),
                     nombreDestinatario = lectorPres["nombreDestinatario"].ToString(),
-                    FechaCreacion = DateTime.Parse(lectorPres["FechaCreacion"].ToString())
+                    FechaCreacion = DateTime.Parse(lectorPres["FechaCreacion"].ToString()),
+                    Detalle = new List<PresupuestosDetalle>()
                 };
-                return presupuesto;
+            }
+            lectorPres.Close();
+
+            if (presupuesto != null)
+            {
+                string sqlDetalle = @"
+            SELECT d.idProducto, d.cantidad, p.descripcion, p.precio
+            FROM PresupuestoDetalles d
+            JOIN Productos p ON p.idProducto = d.idProducto
+            WHERE d.idPresupuesto = @idPresupuesto";
+
+                using var comandoDet = new SqliteCommand(sqlDetalle, conexion);
+                comandoDet.Parameters.AddWithValue("@idPresupuesto", presupuesto.idPresupuesto);
+
+                using var lectorDet = comandoDet.ExecuteReader();
+                while (lectorDet.Read())
+                {
+                    var producto = new Productos
+                    {
+                        idProducto = Convert.ToInt32(lectorDet["idProducto"]),
+                        descripcion = lectorDet["descripcion"].ToString(),
+                        precio = Convert.ToInt32(lectorDet["precio"])
+                    };
+
+                    var detalle = new PresupuestosDetalle
+                    {
+                        producto = producto,
+                        cantidad = Convert.ToInt32(lectorDet["cantidad"])
+                    };
+
+                    presupuesto.Detalle.Add(detalle);
+                }
+
             }
 
-            return null;
+            return presupuesto;
         }
 
         // 🔹 Agregar producto y cantidad a un presupuesto existente

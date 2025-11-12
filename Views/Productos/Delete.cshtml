@@ -1,0 +1,19 @@
+@model Tp8.Models.Productos
+
+<div class="container">
+    <h2>Eliminar producto</h2>
+
+    <p>¿Seguro que querés eliminar este producto?</p>
+
+    <ul class="list-group mb-3">
+        <li class="list-group-item"><strong>ID:</strong> @Model.idProducto</li>
+        <li class="list-group-item"><strong>Descripción:</strong> @Model.descripcion</li>
+        <li class="list-group-item"><strong>Precio:</strong> $@Model.precio</li>
+    </ul>
+
+    <form asp-controller="Productos" asp-action="DeleteConfirmado" method="post">
+        <input type="hidden" asp-for="idProducto" />
+        <button type="submit" class="btn btn-danger">Eliminar</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>

@@ -1,0 +1,19 @@
+@model Tp8.Models.Presupuestos
+
+<div class="container">
+    <h2>Eliminar presupuesto</h2>
+
+    <p>¿Estás seguro de eliminar este presupuesto?</p>
+
+    <ul class="list-group mb-3">
+        <li class="list-group-item"><strong>ID:</strong> @Model.idPresupuesto</li>
+        <li class="list-group-item"><strong>Destinatario:</strong> @Model.nombreDestinatario</li>
+        <li class="list-group-item"><strong>Fecha:</strong> @Model.FechaCreacion.ToShortDateString()</li>
+    </ul>
+
+    <form asp-action="DeleteConfirmado" method="post">
+        <input type="hidden" asp-for="idPresupuesto" />
+        <button type="submit" class="btn btn-danger">Eliminar</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>

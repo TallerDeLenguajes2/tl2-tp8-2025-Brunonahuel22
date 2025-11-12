@@ -1,0 +1,26 @@
+@model Tp8.Models.Presupuestos;
+
+
+
+
+<div class="text-center">
+    <h1>Presupuesto: @Model.idPresupuesto</h1>
+    <h2>Destinatario:  @Model.nombreDestinatario</h2>
+    <h2>Fecha:  @Model.FechaCreacion</h2>
+
+   
+
+
+</div>
+
+ 
+       @foreach (var item in Model.Detalle){
+        <ul class="list-group">
+           <li class="list-group-item list-group-item-dark">Producto: @item.producto.descripcion </li>
+           <li class="list-group-item list-group-item-dark"> Cantidad: @item.cantidad </li>
+           <li  class="list-group-item list-group-item-dark"> Precio unitario: $@item.producto.precio </li>
+           <li  class="list-group-item list-group-item-dark"> Subtotal: $@item.Subtotal()</li>
+        </ul>
+        <br>
+        }
+    

@@ -1,0 +1,23 @@
+@model Tp8.Models.Productos
+
+<div class="container">
+    <h2>Editar producto</h2>
+
+    <form asp-controller="Productos" asp-action="Edit" method="post">
+        <!-- Campo oculto con el ID -->
+        <input type="hidden" asp-for="idProducto" />
+
+        <div class="mb-3">
+            <label asp-for="descripcion" class="form-label">Descripción:</label>
+            <input asp-for="descripcion" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="precio" class="form-label">Precio:</label>
+            <input asp-for="precio" class="form-control" type="number" />
+        </div>
+
+        <button type="submit" class="btn btn-success">Guardar cambios</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>

@@ -25,4 +25,49 @@ public class ProductosController : Controller
         List<Productos> productos = productoRepository.listarProductos();
         return View(productos);
     }
+
+
+    [HttpGet]
+
+    public IActionResult Create()
+    {  
+        return View();
+    }
+    [HttpPost]
+
+    public IActionResult Create(Productos p)
+    {
+        productoRepository.crearProducto(p);
+        return RedirectToAction("Index");
+    }
+
+
+     [HttpGet]
+    public IActionResult Edit(int id)
+    {
+        var producto = productoRepository.obtenerDetallePorId(id);
+        return View(producto);
+    }
+
+    [HttpPost]
+    public IActionResult Edit(Productos editado)
+    {
+        productoRepository.ModificarProductoExistente(editado.idProducto, editado);
+        return RedirectToAction("Index");
+    }
+    
+
+      [HttpGet]
+    public IActionResult Delete(int id)
+    {
+        var producto = productoRepository.obtenerDetallePorId(id);
+        return View(producto);
+    }
+
+    [HttpPost]
+    public IActionResult DeleteConfirmado(int id)
+    {
+        productoRepository.EliminarProducto(id);
+        return RedirectToAction("Index");
+    }
 }

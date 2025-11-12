@@ -10,7 +10,6 @@
                 <th scope="col">Id</th>
                 <th scope="col">Destinatario</th>
                 <th scope="col">Fecha</th>
-                <th scope="col">Detalle</th>
             </tr>
         </thead>
 
@@ -22,20 +21,6 @@
                     <th scope="row">@producto.idPresupuesto</th>
                     <td>@producto.nombreDestinatario</td>
                     <td>$@producto.FechaCreacion</td>
-
-                    <td>
-                        <ul style="list-style:none; padding-left:0;">
-                            @foreach (var item in producto.Detalle)
-                            {
-                                <li>
-                                    <b>@item.producto.descripcion</b>
-                                    - Cantidad: @item.cantidad
-                                    - Precio: $@item.producto.precio
-                                    - Subtotal: $@item.Subtotal()
-                                </li>
-                            }
-                        </ul>
-                    </td>
                 </tr>
             }
         </tbody>

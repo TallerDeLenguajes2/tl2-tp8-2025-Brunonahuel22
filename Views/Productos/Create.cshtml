@@ -1,0 +1,20 @@
+@model Tp8.Models.Productos
+
+<div class="container">
+    <h2>Crear nuevo producto</h2>
+
+<form asp-controller="Productos" asp-action="Create" method="post">
+
+    <div class="mb-3">
+        <label asp-for="descripcion" class="form-label">Descripcion:</label>
+        <input asp-for="descripcion" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="precio" class="form-label">Precio:</label>
+        <input asp-for="precio" class="form-control" type="number" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Crear</button>
+</form>
+</div>

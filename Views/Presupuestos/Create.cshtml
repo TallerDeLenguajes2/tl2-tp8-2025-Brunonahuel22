@@ -1,0 +1,20 @@
+@model Tp8.Models.Presupuestos
+
+<div class="container">
+    <h2>Crear nuevo presupuesto</h2>
+
+    <form asp-action="Create" method="post">
+        <div class="mb-3">
+            <label asp-for="nombreDestinatario" class="form-label">Destinatario:</label>
+            <input asp-for="nombreDestinatario" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="FechaCreacion" class="form-label">Fecha de creación:</label>
+            <input asp-for="FechaCreacion" type="date" class="form-control" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Guardar</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
