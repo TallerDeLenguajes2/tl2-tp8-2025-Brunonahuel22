@@ -1,14 +1,16 @@
 using Microsoft.Data.Sqlite;
 using Tp8.Models;
+using Tp8.Interfaces;
+using MiProyectoDI.Interfaces;
 
 namespace Tp8.Repository
 {
-    public class PresupuestosRepository
+    public class PresupuestosRepository : IPresupuestoRepository
     {
         private string cadenaConexion = "Data Source=tienda.db";
 
         // 🔹 Crear un nuevo presupuesto
-        public Presupuestos CrearPresupuesto(Presupuestos p)
+        public Presupuestos CrearPresupuestos(Presupuestos p)
         {
             using var conexion = new SqliteConnection(cadenaConexion);
             conexion.Open();
@@ -29,7 +31,7 @@ namespace Tp8.Repository
 
             return p;
         }
-        public void EditarPresupuesto(Presupuestos p)
+        public int EditarPresupuesto(Presupuestos p)
         {
             using var conexion = new SqliteConnection(cadenaConexion);
             conexion.Open();
@@ -40,7 +42,7 @@ namespace Tp8.Repository
             comando.Parameters.AddWithValue("@fecha", p.FechaCreacion);
             comando.Parameters.AddWithValue("@id", p.idPresupuesto);
 
-            comando.ExecuteNonQuery();
+            return comando.ExecuteNonQuery();
         }
 
 
@@ -73,7 +75,7 @@ namespace Tp8.Repository
 
 
         // 🔹 Obtener presupuesto por ID (con sus productos y cantidades)
-        public Presupuestos? ObtenerPresupuestoPorId(int id)
+        public Presupuestos ObtenerPresupuestoPorId(int id)
         {
             Presupuestos? presupuesto = null;
             List<PresupuestosDetalle> detalles = new List<PresupuestosDetalle>();
@@ -167,9 +169,9 @@ namespace Tp8.Repository
             string sqlPres = "DELETE FROM Presupuestos WHERE idPresupuesto = @id";
             using var cmdPres = new SqliteCommand(sqlPres, conexion);
             cmdPres.Parameters.AddWithValue("@id", id);
-            int filas = cmdPres.ExecuteNonQuery();
+            return cmdPres.ExecuteNonQuery();
 
-            return filas;
+            
         }
     }
 }

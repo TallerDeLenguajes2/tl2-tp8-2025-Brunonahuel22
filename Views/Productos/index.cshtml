@@ -6,6 +6,9 @@
 
 <div class="text-center">
     <h1 class="display-4">Lista Productos</h1>
+    <div class="d-flex m-3">
+    <a type="button" class="btn btn-primary ms-auto" asp-controller="Productos" asp-action="Create">Agregar Producto</a>
+    </div>
 
       <table class="table table-info container">
         <thead>
@@ -13,6 +16,7 @@
                 <th scope="col">Id</th>
                 <th scope="col">Descripcion</th>
                 <th scope="col">Precio</th>
+                <th scope="col">Opciones</th>
             </tr>
         </thead>
 
@@ -24,6 +28,10 @@
             <td scope="row">@producto.idProducto</td>
             <td>@producto.descripcion</td>
             <td>$@producto.precio</td>
+            <td>
+                <a type="button" class="btn btn-warning" asp-controller="Productos" asp-action="Edit" asp-route-id="@producto.idProducto" >Editar</a>
+                <a type="button" class="btn btn-danger" asp-controller="Productos" asp-action="Delete" asp-route-id="@producto.idProducto">Eliminar</a>
+            </td>
         </tr>
     }
 

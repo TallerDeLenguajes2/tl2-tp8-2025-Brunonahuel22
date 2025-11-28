@@ -1,14 +1,17 @@
 using Tp8.Models;
 using Microsoft.Data.Sqlite;
 using SQLitePCL;
+using Tp8.ViewModels;
+using Tp8.Interfaces;
 namespace Tp8.Repository;
 
 
 
-public class ProductoRepository
+
+public class ProductoRepository : IProductoRepository
 {
     string cadenaConexion = "Data Source=tienda.db";
-    public Productos crearProducto(Productos producto)
+    public Productos CrearProducto(Productos producto)
     {
 
         using SqliteConnection connection = new SqliteConnection(cadenaConexion);
@@ -31,7 +34,7 @@ public class ProductoRepository
     }
 
     //Listar todos los Productos registrados. (devuelve un List de Producto)
-    public List<Productos> listarProductos()
+    public List<Productos> ListarProductos()
     {
         var lista = new List<Productos>();
         using var connection = new SqliteConnection(cadenaConexion);
@@ -60,7 +63,7 @@ public class ProductoRepository
 
 
     //Obtener detalles de un Productos por su ID
-    public Productos obtenerDetallePorId(int id)
+    public Productos? ObtenerPorId(int id)
     {
         using SqliteConnection connection = new SqliteConnection(cadenaConexion);
         connection.Open();
@@ -93,23 +96,22 @@ public class ProductoRepository
     }
 
     //Modificar un Producto existente. (recibe un Id y un objeto Producto)
-    public int ModificarProductoExistente(int id, Productos productoAModificar)
+    public int ModificarProducto(Productos producto)
     {
-        SqliteConnection connection = new SqliteConnection(cadenaConexion);
-
+        using var connection = new SqliteConnection(cadenaConexion);
         connection.Open();
+
         string sql = "UPDATE Productos SET descripcion = @descripcion, precio = @precio WHERE idProducto = @id";
 
-        using SqliteCommand command = new SqliteCommand(sql, connection);
+        using var command = new SqliteCommand(sql, connection);
 
-        command.Parameters.Add(new SqliteParameter("@id", id));
-        command.Parameters.Add(new SqliteParameter("@descripcion", productoAModificar.descripcion));
-        command.Parameters.Add(new SqliteParameter("@precio", productoAModificar.precio));
+        command.Parameters.Add(new SqliteParameter("@id", producto.idProducto));
+        command.Parameters.Add(new SqliteParameter("@descripcion", producto.descripcion));
+        command.Parameters.Add(new SqliteParameter("@precio", producto.precio));
 
-        int filasAfectadas = command.ExecuteNonQuery();
-
-        return filasAfectadas;
+        return command.ExecuteNonQuery();
     }
+
 
     //Eliminar un Producto por ID
     public int EliminarProducto(int id)

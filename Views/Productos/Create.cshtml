@@ -1,4 +1,9 @@
-@model Tp8.Models.Productos
+@model Tp8.ViewModels.ProductoViewModel
+
+
+@{
+ ViewData["Title"] = "Crear Producto";
+}
 
 <div class="container">
     <h2>Crear nuevo producto</h2>
@@ -6,15 +11,22 @@
 <form asp-controller="Productos" asp-action="Create" method="post">
 
     <div class="mb-3">
-        <label asp-for="descripcion" class="form-label">Descripcion:</label>
-        <input asp-for="descripcion" class="form-control" />
+        <label asp-for="Descripcion" class="form-label">Descripcion:</label>
+        <input asp-for="Descripcion" class="form-control" />
+        <span asp-validation-for="Descripcion" class="text-danger p-1"></span>
     </div>
 
     <div class="mb-3">
-        <label asp-for="precio" class="form-label">Precio:</label>
-        <input asp-for="precio" class="form-control" type="number" />
+        <label asp-for="Precio" class="form-label">Precio:</label>
+        <input asp-for="Precio" class="form-control" type="number" />
+        <span asp-validation-for="Precio" class="text-danger p-1"></span>
     </div>
 
     <button type="submit" class="btn btn-primary">Crear</button>
+    <a asp-action="Index" class="btn btn-danger">Cancelar</a>
 </form>
+@section Scripts {
+ <partial name="_ValidationScriptsPartial" />
+}
+
 </div>

@@ -10,17 +10,25 @@
                 <th scope="col">Id</th>
                 <th scope="col">Destinatario</th>
                 <th scope="col">Fecha</th>
+                <th scope="col">Opciones</th>
             </tr>
         </thead>
 
         <tbody>
 
-            @foreach (var producto in Model)
+            @foreach (var presupuesto in Model)
             {
                 <tr>
-                    <th scope="row">@producto.idPresupuesto</th>
-                    <td>@producto.nombreDestinatario</td>
-                    <td>$@producto.FechaCreacion</td>
+                    <th scope="row">@presupuesto.idPresupuesto</th>
+                    <td>@presupuesto.nombreDestinatario</td>
+                    <td>@presupuesto.FechaCreacion</td>
+                    <td>
+                        <a type="button" class="btn btn-primary" asp-controller="Presupuestos" asp-action="AgregarProducto"
+                            asp-route-id="@presupuesto.idPresupuesto">
+                            Agregar Producto
+                        </a>
+
+                    </td>
                 </tr>
             }
         </tbody>

@@ -1,17 +1,20 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Tp8.Models;
+using Tp8.ViewModels;
+
 
 using Tp8.Repository;
+using Tp8.Interfaces;
 
 namespace Tp8.Controllers;
 
 public class ProductosController : Controller
 {
-    private ProductoRepository productoRepository;
-    public ProductosController()
+    private IProductoRepository productoRepository;
+    public ProductosController(IProductoRepository pro)
     {
-        productoRepository = new ProductoRepository();
+        productoRepository = pro;
     }
 
 
@@ -22,7 +25,7 @@ public class ProductosController : Controller
     [HttpGet]
     public IActionResult Index()
     {
-        List<Productos> productos = productoRepository.listarProductos();
+        List<Productos> productos = productoRepository.ListarProductos();
         return View(productos);
     }
 
@@ -30,37 +33,74 @@ public class ProductosController : Controller
     [HttpGet]
 
     public IActionResult Create()
-    {  
+    {
         return View();
     }
     [HttpPost]
 
-    public IActionResult Create(Productos p)
+    public IActionResult Create(ProductoViewModel p)
     {
-        productoRepository.crearProducto(p);
-        return RedirectToAction("Index");
+        // 1. CHEQUEO DE SEGURIDAD DEL SERVIDOR
+        if (!ModelState.IsValid)
+        {
+            // Si falla: Devolvemos el ViewModel con los datos y errores a la Vista
+            return View(p);
+        }
+
+        // 2. SI ES VÁLIDO: Mapeo Manual de VM a Modelo de Dominio
+        var nuevoProducto = new Productos
+        {
+            descripcion = p.Descripcion,
+            precio = p.Precio
+        };
+
+
+
+
+        productoRepository.CrearProducto(nuevoProducto);
+        return RedirectToAction(nameof(Index));
     }
 
 
-     [HttpGet]
+    [HttpGet]
     public IActionResult Edit(int id)
     {
-        var producto = productoRepository.obtenerDetallePorId(id);
+        var producto = productoRepository.ObtenerPorId(id);
         return View(producto);
     }
 
     [HttpPost]
-    public IActionResult Edit(Productos editado)
+    public IActionResult Edit(ProductoViewModel productoVM, int id)
     {
-        productoRepository.ModificarProductoExistente(editado.idProducto, editado);
+
+        if (id != productoVM.IdProducto) return NotFound();
+
+        // 1. CHEQUEO DE SEGURIDAD DEL SERVIDOR
+        if (!ModelState.IsValid)
+        {
+            return View(productoVM);
+        }
+
+        // 2. Mapeo Manual de VM a Modelo de Dominio
+        var productoAEditar = new Productos
+        {
+            idProducto = productoVM.IdProducto, // Necesario para el UPDATE
+            descripcion = productoVM.Descripcion,
+            precio = productoVM.Precio
+        };
+
+
+
+
+        productoRepository.ModificarProducto(productoAEditar);
         return RedirectToAction("Index");
     }
-    
 
-      [HttpGet]
+
+    [HttpGet]
     public IActionResult Delete(int id)
     {
-        var producto = productoRepository.obtenerDetallePorId(id);
+        var producto = productoRepository.ObtenerPorId(id);
         return View(producto);
     }
 
